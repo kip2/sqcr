@@ -1,4 +1,3 @@
-use dotenv::dotenv;
 use sqlx::mysql::MySqlPoolOptions;
 use std::env;
 
@@ -15,11 +14,19 @@ async fn main() {
         .await
         .unwrap_or_else(|_| panic!("Cannot connect to the database"));
 
+    // Gererate transaction
+    let tx = pool.begin().await.expect("transaction error.");
+
     // Execute SQL query
     let rows = sqlx::query!("SELECT * FROM Cars")
         .fetch_all(&pool)
         .await
         .expect("Failed to db fetch");
+
+    // transaction commit
+    let _ = tx.commit().await.unwrap_or_else(|e| {
+        println!("{:?}", e);
+    });
 
     // Print result
     for row in rows {
