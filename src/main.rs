@@ -1,4 +1,7 @@
 use sqlx::mysql::MySqlPoolOptions;
+use sqlx::MySql;
+use sqlx::Pool;
+use sqlx::Row;
 use std::env;
 
 #[tokio::main]
@@ -14,12 +17,18 @@ async fn main() {
         .await
         .unwrap_or_else(|_| panic!("Cannot connect to the database"));
 
+    let query = "SELECT * FROM Cars".to_string();
+
+    execute_query(&pool, &query).await;
+}
+
+async fn execute_query(db: &Pool<MySql>, query: &str) {
     // Gererate transaction
-    let tx = pool.begin().await.expect("transaction error.");
+    let tx = db.begin().await.expect("transaction error.");
 
     // Execute SQL query
-    let rows = sqlx::query!("SELECT * FROM Cars")
-        .fetch_all(&pool)
+    let rows = sqlx::query(query)
+        .fetch_all(db)
         .await
         .expect("Failed to db fetch");
 
@@ -30,6 +39,6 @@ async fn main() {
 
     // Print result
     for row in rows {
-        println!("Value: {:?}", row.model.unwrap());
+        println!("Value: {:?}", row.get::<String, _>("model"));
     }
 }
