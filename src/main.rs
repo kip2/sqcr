@@ -1,6 +1,6 @@
 use sqlx::mysql::MySqlPoolOptions;
-use sqlx::{query, MySql, Pool, Row};
-use std::env;
+use sqlx::{MySql, Pool, Row};
+use std::{env, error::Error, fs};
 
 #[tokio::main]
 async fn main() {
@@ -15,30 +15,33 @@ async fn main() {
         .await
         .unwrap_or_else(|_| panic!("Cannot connect to the database"));
 
-    // let query = "SELECT * FROM Cars";
-    let mut queries: Vec<&str> = Vec::new();
-    queries.push("SELECT * FROM Cars");
+    // SQL query file path
+    let path = "./migrations/query.sql";
 
-    queries.push(
-        "INSERT INTO Cars (make, model, year, color, price, mileage, transmission, engine, status)
-    VALUES ('Toyota', 'Corolla', 2020, 'White', 20000.00, 15000.0, 'Automatic', '1.8L', 'Used')",
-    );
-    // error case
-    queries.push(
-        "INSERT INTO Cars (make, model, year, color, price, mileage, transmission, engine, status)
-        VALUES ('Toyota', 'Corolla', 'two thousand twenty', 'White', 'twenty thousand', 15000, 'Automatic', '1.8L', 'Used')"
-    );
+    // Read SQL queries
+    let queries = read_sql_file(&path).unwrap();
 
     execute_query(&pool, queries).await;
 }
 
-async fn execute_query(db: &Pool<MySql>, queries: Vec<&str>) {
+fn read_sql_file(path: &str) -> Result<Vec<String>, Box<dyn Error>> {
+    let contents = fs::read_to_string(path)?;
+
+    let queries = contents
+        .split(';')
+        .filter(|s| !s.trim().is_empty())
+        .map(|s| s.trim().to_string())
+        .collect();
+    Ok(queries)
+}
+
+async fn execute_query(db: &Pool<MySql>, queries: Vec<String>) {
     // Gererate transaction
     let tx = db.begin().await.expect("transaction error.");
 
     for query in queries {
         // Execute SQL query
-        let result = sqlx::query(query).fetch_all(db).await;
+        let result = sqlx::query(&query).fetch_all(db).await;
 
         match result {
             Ok(rows) => {
