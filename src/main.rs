@@ -18,10 +18,12 @@ async fn main() {
     // let query = "SELECT * FROM Cars";
     let mut queries: Vec<&str> = Vec::new();
     queries.push("SELECT * FROM Cars");
+
     queries.push(
         "INSERT INTO Cars (make, model, year, color, price, mileage, transmission, engine, status)
     VALUES ('Toyota', 'Corolla', 2020, 'White', 20000.00, 15000.0, 'Automatic', '1.8L', 'Used')",
     );
+    // error case
     queries.push(
         "INSERT INTO Cars (make, model, year, color, price, mileage, transmission, engine, status)
         VALUES ('Toyota', 'Corolla', 'two thousand twenty', 'White', 'twenty thousand', 15000, 'Automatic', '1.8L', 'Used')"
@@ -49,12 +51,11 @@ async fn execute_query(db: &Pool<MySql>, queries: Vec<&str>) {
                         Ok(value) => println!("Value: {:?}", value),
                         Err(e) => println!("Error getting model: {}", e),
                     }
-                    // println!("Value: {:?}", row.get::<String, _>("model"));
                 }
             }
             Err(e) => {
-                println!("Failed to query from the database: {}", e);
-                println!("error query: {:?}", &query);
+                println!("Database query failed: {}", e);
+                println!("Failed query: {:?}", &query);
                 continue;
             }
         }
