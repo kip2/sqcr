@@ -1,3 +1,2 @@
 SELECT * FROM Cars;
 INSERT INTO Cars (make, model, year, color, price, mileage, transmission, engine, status) VALUES ('Toyota', 'Corolla', 2020, 'White', 20000.00, 15000.0, 'Automatic', '1.8L', 'Used');
-INSERT INTO Cars (make, model, year, color, price, mileage, transmission, engine, status) VALUES ('Toyota', 'Corolla', 'two thousand twenty', 'White', 'twenty thousand', 15000, 'Automatic', '1.8L', 'Used');

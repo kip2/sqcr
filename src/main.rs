@@ -37,29 +37,20 @@ fn read_sql_file(path: &str) -> Result<Vec<String>, Box<dyn Error>> {
 
 async fn execute_query(db: &Pool<MySql>, queries: Vec<String>) {
     // Gererate transaction
-    let tx = db.begin().await.expect("transaction error.");
+    let mut tx = db.begin().await.expect("transaction error.");
 
     for query in queries {
         // Execute SQL query
-        let result = sqlx::query(&query).fetch_all(db).await;
+        let result = sqlx::query(&query).execute(&mut *tx).await;
 
         match result {
-            Ok(rows) => {
-                if rows.is_empty() {
-                    continue;
-                }
-                // Print result
-                for row in &rows {
-                    match row.try_get::<String, _>("model") {
-                        Ok(value) => println!("Value: {:?}", value),
-                        Err(e) => println!("Error getting model: {}", e),
-                    }
-                }
-            }
+            Ok(_) => {}
             Err(e) => {
                 println!("Database query failed: {}", e);
                 println!("Failed query: {:?}", &query);
-                continue;
+                // rollback
+                tx.rollback().await.expect("Transaction rollback error.");
+                return;
             }
         }
     }
