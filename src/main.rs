@@ -1,5 +1,5 @@
 use sqlx::mysql::MySqlPoolOptions;
-use sqlx::{MySql, Pool, Row};
+use sqlx::{query, MySql, Pool, Row};
 use std::env;
 
 #[tokio::main]
@@ -15,28 +15,53 @@ async fn main() {
         .await
         .unwrap_or_else(|_| panic!("Cannot connect to the database"));
 
-    let query = "SELECT * FROM Cars".to_string();
+    // let query = "SELECT * FROM Cars";
+    let mut queries: Vec<&str> = Vec::new();
+    queries.push("SELECT * FROM Cars");
+    queries.push(
+        "INSERT INTO Cars (make, model, year, color, price, mileage, transmission, engine, status)
+    VALUES ('Toyota', 'Corolla', 2020, 'White', 20000.00, 15000.0, 'Automatic', '1.8L', 'Used')",
+    );
+    queries.push(
+        "INSERT INTO Cars (make, model, year, color, price, mileage, transmission, engine, status)
+        VALUES ('Toyota', 'Corolla', 'two thousand twenty', 'White', 'twenty thousand', 15000, 'Automatic', '1.8L', 'Used')"
+    );
 
-    execute_query(&pool, &query).await;
+    execute_query(&pool, queries).await;
 }
 
-async fn execute_query(db: &Pool<MySql>, query: &str) {
+async fn execute_query(db: &Pool<MySql>, queries: Vec<&str>) {
     // Gererate transaction
     let tx = db.begin().await.expect("transaction error.");
 
-    // Execute SQL query
-    let rows = sqlx::query(query)
-        .fetch_all(db)
-        .await
-        .expect("Failed to db fetch");
+    for query in queries {
+        // Execute SQL query
+        let result = sqlx::query(query).fetch_all(db).await;
+
+        match result {
+            Ok(rows) => {
+                if rows.is_empty() {
+                    continue;
+                }
+                // Print result
+                for row in &rows {
+                    match row.try_get::<String, _>("model") {
+                        Ok(value) => println!("Value: {:?}", value),
+                        Err(e) => println!("Error getting model: {}", e),
+                    }
+                    // println!("Value: {:?}", row.get::<String, _>("model"));
+                }
+            }
+            Err(e) => {
+                println!("Failed to query from the database: {}", e);
+                println!("error query: {:?}", &query);
+                continue;
+            }
+        }
+    }
 
     // transaction commit
     let _ = tx.commit().await.unwrap_or_else(|e| {
         println!("{:?}", e);
     });
-
-    // Print result
-    for row in rows {
-        println!("Value: {:?}", row.get::<String, _>("model"));
-    }
 }
