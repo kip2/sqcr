@@ -1,5 +1,5 @@
 use sqlx::mysql::MySqlPoolOptions;
-use sqlx::{MySql, Pool, Row};
+use sqlx::{MySql, Pool};
 use std::{env, error::Error, fs};
 
 #[tokio::main]
