@@ -1,3 +1,1 @@
-pub fn get_args() -> () {
-    unimplemented!()
-}
+pub fn get_args() -> () {}

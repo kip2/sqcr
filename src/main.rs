@@ -4,6 +4,12 @@ use std::{env, error::Error, fs};
 
 #[tokio::main]
 async fn main() {
+    // todo: Add the crersponding code incrementally
+    if let Err(e) = sqcr::get_args().and_then(sqcr::run) {
+        eprintln!("{}", e);
+        std::process::exit(1);
+    }
+
     // Read environment variables and generate URL
     dotenv::dotenv().expect("Fialed to read .env file");
     let database_url = env::var("DATABASE_URL").expect("DABASE_URL must be set");
