@@ -5,7 +5,7 @@ use std::{env, error::Error, fs};
 #[tokio::main]
 async fn main() {
     // todo: Add the crersponding code incrementally
-    if let Err(e) = sqcr::get_args().and_then(sqcr::run) {
+    if let Err(e) = sqcr::get_args() {
         eprintln!("{}", e);
         std::process::exit(1);
     }
