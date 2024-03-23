@@ -62,7 +62,7 @@ After building, the executable file can be found in the target/release directory
 
 ## LICENSE
 
-[MIT LICENSE](https://github.com/kip2/sqcr/LICENSE)
+[MIT LICENSE](https://github.com/kip2/sqcr/blob/main/LICENSE)
 
 ## Author
 
