@@ -12,17 +12,23 @@ This tool allows for efficient database management and data manipulation directl
 
 ## Prerequisites
 
+Please note that `sqcr` currently only supports MySQL databases.
+Ensure that your database and queries are compatible with MySQL.
+
 Before using `sqcr`, you need to set up a `.env` file with the following format for your database connection:
+
 
 ```
 DATABASE_URL=mysql://<user-name>:<password>@<host>:<port>/<database-name>
 ```
 
-Please note that `sqcr` currently only supports MySQL databases.
-
 ## Usage
 
-To use `sqcr`, simply pass the file containing your SQL queries as an argument to the command line. For example:
+`sqcr` currently only supports MySQL.
+
+ To use `sqcr`, simply pass the file containing your SQL queries as an argument to the command line. 
+
+ Ensure that the queries in the file are compatible with MySQL. For example:
 
 ```bash
 sqcr query-file.sql
