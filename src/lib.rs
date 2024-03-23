@@ -6,7 +6,7 @@ use std::{env, error::Error, fs};
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
 pub struct Config {
-    #[arg(short = 'f', long = "file", help = "Input file path")]
+    #[arg(help = "Input file path")]
     file: String,
 }
 
