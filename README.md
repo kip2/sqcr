@@ -60,6 +60,10 @@ This command compiles the project in release mode, creating an optimized executa
 
 After building, the executable file can be found in the target/release directory within your project folder.
 
+## LICENSE
+
+[MIT LICENSE](https://github.com/kip2/sqcr/LICENSE)
+
 ## Author
 
 [kip2](https://github.com/kip2)
