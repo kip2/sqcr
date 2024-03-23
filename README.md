@@ -1,4 +1,4 @@
-# sqcr
+<h1 align="center"> sqcr </h1>
 
 `sqcr` is a simple application that reads SQL files from the command line and executes the queries within them. 
 
